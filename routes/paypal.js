@@ -1,8 +1,6 @@
 const express = require('express');
-const Discord = require('discord.js');
 const request = require('request-promise-native');
 const router = express.Router();
-const client = new Discord.Client();
 const donorsData = require('../data/donorsData.json');
 
 router.get('/', async (req, res, next) => {
