@@ -14,7 +14,6 @@ router.get('/', async (req, res, next) => {
       }
     };
 
-    let donors = [];
     for (let donor of donorsData) {
       let url = `https://discordapp.com/api/users/${donor.discord_id}`;
       let response = await request(url, options);
