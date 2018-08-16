@@ -1,6 +1,7 @@
 const express = require('express');
 const request = require('request-promise-native');
 const router = express.Router();
+const cache = require('../data/cache');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -43,8 +44,16 @@ router.get('/', async (req, res, next) => {
         let discord_avatar_url = null;
 
         if (patron.discord_id) {
-          let url = `https://discordapp.com/api/users/${patron.discord_id}`;
-          let response = await request(url, options);
+          let response;
+          if (cache.hasOwnProperty(patron.discord_id)) {
+            response = cache[patron.discord_id];
+          }
+          else {
+            let url = `https://discordapp.com/api/users/${patron.discord_id}`;
+            response = await request(url, options);
+
+            cache[patron.discord_id] = response;
+          }
 
           discord_tag = `${response.username}#${response.discriminator}`;
           discord_avatar_url = response.avatar
