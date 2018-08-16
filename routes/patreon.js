@@ -35,17 +35,12 @@ router.get('/', async (req, res, next) => {
         let user = users.filter(user => user.id === pledge.relationships.patron.data.id)[0];
 
         return {
-          id: id,
-          full_name: user.attributes.full_name,
-          vanity: user.attributes.vanity,
-          // email: user.attributes.email,
-          discord_id: user.attributes.social_connections.discord ? user.attributes.social_connections.discord.user_id : null,
-          amount_cents: pledge.attributes.amount_cents,
-          created_at: pledge.attributes.created_at,
+          name: user.attributes.full_name,
+          pledge_amount: pledge.attributes.amount_cents / 100,
+          patron_since: pledge.attributes.created_at,
           declined_since: pledge.attributes.declined_since,
-          patron_pays_fees: pledge.attributes.patron_pays_fees,
-          pledge_cap_cents: pledge.attributes.pledge_cap_cents,
-          image_url: user.attributes.image_url
+          image_url: user.attributes.image_url,
+          discord_id: user.attributes.social_connections.discord ? user.attributes.social_connections.discord.user_id : null,
         };
       });
 
@@ -57,15 +52,22 @@ router.get('/', async (req, res, next) => {
       };
       for (let patron of patrons) {
         let discord_tag = null;
+        let discord_avatar_url = null;
 
         if (patron.discord_id) {
           let url = `https://discordapp.com/api/users/${patron.discord_id}`;
           let response = await request(url, options);
 
           discord_tag = `${response.username}#${response.discriminator}`;
+          discord_avatar_url = response.avatar
+            ? `https://cdn.discordapp.com/avatars/${patron.discord_id}/${response.avatar}.${response.avatar.startsWith('a_') ? 'gif' : 'png'}?size=2048`
+            : `https://cdn.discordapp.com/embed/avatars/${response.discriminator %  5}.png`;
         }
 
+        patron.patron_since = patron.patron_since ? new Date(patron.patron_since).getTime() : null;
+        patron.declined_since = patron.declined_since ? new Date(patron.declined_since).getTime() : null;
         patron.discord_tag = discord_tag;
+        patron.discord_avatar_url = discord_avatar_url;
       }
 
       res.json(patrons);
