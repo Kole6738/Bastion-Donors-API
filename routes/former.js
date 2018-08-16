@@ -2,6 +2,7 @@ const express = require('express');
 const request = require('request-promise-native');
 const router = express.Router();
 const donorsData = require('../data/donorsData.json');
+const cache = require('../data/cache');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -13,8 +14,16 @@ router.get('/', async (req, res, next) => {
     };
 
     for (let donor of donorsData) {
-      let url = `https://discordapp.com/api/users/${donor.discord_id}`;
-      let response = await request(url, options);
+      let response;
+      if (cache.hasOwnProperty(donor.discord_id)) {
+        response = cache[donor.discord_id];
+      }
+      else {
+        let url = `https://discordapp.com/api/users/${donor.discord_id}`;
+        response = await request(url, options);
+
+        cache[donor.discord_id] = response;
+      }
 
       donor.last_donated = new Date(donor.last_donated).getTime();
       donor.discord_tag = `${response.username}#${response.discriminator}`;
