@@ -49,6 +49,25 @@ router.get('/', async (req, res, next) => {
         };
       });
 
+      options = {
+        json: true,
+        headers: {
+          Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`
+        }
+      };
+      for (let patron of patrons) {
+        let discord_tag = null;
+
+        if (patron.discord_id) {
+          let url = `https://discordapp.com/api/users/${patron.discord_id}`;
+          let response = await request(url, options);
+
+          discord_tag = `${response.username}#${response.discriminator}`;
+        }
+
+        patron.discord_tag = discord_tag;
+      }
+
       res.json(patrons);
     }
   }
