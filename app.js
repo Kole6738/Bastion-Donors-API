@@ -4,7 +4,7 @@ const logger = require('morgan');
 require('dotenv').config();
 
 const patreonRouter = require('./routes/patreon');
-const paypalRouter = require('./routes/paypal');
+const formerRouter = require('./routes/former');
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/patreon', patreonRouter);
-app.use('/paypal', paypalRouter);
+app.use('/former', formerRouter);
 
 // Catch 404
 app.use((req, res, next) => {
