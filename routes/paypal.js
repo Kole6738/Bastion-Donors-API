@@ -22,7 +22,15 @@ router.get('/', async (req, res, next) => {
     res.json(donorsData);
   }
   catch (e) {
-    console.error(e);
+    if (e.name === 'StatusCodeError') {
+      res.json({
+        error: '500',
+        message: `Internal Error - ${e.statusCode}`
+      });
+    }
+    else {
+      next(e);
+    }
   }
 });
 
