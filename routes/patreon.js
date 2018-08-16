@@ -9,21 +9,20 @@ router.get('/', async (req, res, next) => {
       headers: {
         'Authorization': `Bearer ${process.env.PATREON_ACCESS_TOKEN}`
       },
-      uri: 'https://www.patreon.com/api/oauth2/api/current_user/campaigns',
       json: true
     };
-
-    let response = await request(options);
+    let url = 'https://www.patreon.com/api/oauth2/api/current_user/campaigns';
+    let response = await request(url, options);
 
     if (response && response.data && response.data.length) {
       options = {
         headers: {
           'Authorization': `Bearer ${process.env.PATREON_ACCESS_TOKEN}`
         },
-        uri: `https://www.patreon.com/api/oauth2/api/campaigns/${response.data[0].id}/pledges`,
         json: true
       };
-      response = await request(options);
+      url = `https://www.patreon.com/api/oauth2/api/campaigns/${response.data[0].id}/pledges`;
+      response = await request(url, options);
 
       let data = response.data;
       let included = response.included;
