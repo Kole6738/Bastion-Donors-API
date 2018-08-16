@@ -16,7 +16,11 @@ router.get('/', async (req, res, next) => {
       let url = `https://discordapp.com/api/users/${donor.discord_id}`;
       let response = await request(url, options);
 
-      donor.usertag = `${response.username}#${response.discriminator}`
+      donor.last_donated = new Date(donor.last_donated).getTime();
+      donor.discord_tag = `${response.username}#${response.discriminator}`;
+      donor.discord_avatar_url = response.avatar
+        ? `https://cdn.discordapp.com/avatars/${donor.discord_id}/${response.avatar}.${response.avatar.startsWith('a_') ? 'gif' : 'png'}?size=2048`
+        : `https://cdn.discordapp.com/embed/avatars/${response.discriminator %  5}.png`;
     }
 
     res.json(donorsData);
