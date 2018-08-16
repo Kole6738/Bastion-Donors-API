@@ -2,7 +2,6 @@ const express = require('express');
 const request = require('request-promise-native');
 const router = express.Router();
 
-/* GET home page. */
 router.get('/', async (req, res, next) => {
   try {
     let options = {
@@ -15,12 +14,6 @@ router.get('/', async (req, res, next) => {
     let response = await request(url, options);
 
     if (response && response.data && response.data.length) {
-      options = {
-        headers: {
-          'Authorization': `Bearer ${process.env.PATREON_ACCESS_TOKEN}`
-        },
-        json: true
-      };
       url = `https://www.patreon.com/api/oauth2/api/campaigns/${response.data[0].id}/pledges`;
       response = await request(url, options);
 
@@ -44,12 +37,7 @@ router.get('/', async (req, res, next) => {
         };
       });
 
-      options = {
-        json: true,
-        headers: {
-          Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`
-        }
-      };
+      options.headers.Authorization = `Bot ${process.env.DISCORD_BOT_TOKEN}`;
       for (let patron of patrons) {
         let discord_tag = null;
         let discord_avatar_url = null;
